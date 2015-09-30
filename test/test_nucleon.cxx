@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -12,7 +12,7 @@
 #include "../src/nucleus.h"
 #include "../src/random.h"
 
-using namespace trento;
+using namespace glauber;
 
 TEST_CASE( "nucleon" ) {
   auto fluct = 1. + .5*random::canonical<>();
@@ -24,10 +24,11 @@ TEST_CASE( "nucleon" ) {
       {"fluctuation",   fluct},
       {"cross-section", xsec},
       {"nucleon-width", width},
+      {"alpha",         0.},
   });
 
   NucleonProfile profile{var_map};
-  profile.fluctuate();
+  profile.fluctuate(Nucleon{});
 
   // truncation radius
   auto R = profile.radius();
@@ -51,7 +52,7 @@ TEST_CASE( "nucleon" ) {
   auto total = 0.;
   auto n = 1e6;
   for (auto i = 0; i < static_cast<int>(n); ++i) {
-    profile.fluctuate();
+    profile.fluctuate(Nucleon{});
     total += profile.thickness(0.) * (2*M_PI*wsq);
   }
 
@@ -110,10 +111,11 @@ TEST_CASE( "nucleon" ) {
       {"fluctuation",   1e12},
       {"cross-section", xsec},
       {"nucleon-width", width},
+      {"alpha",         0.},
   });
 
   NucleonProfile no_fluct_profile{no_fluct_var_map};
-  no_fluct_profile.fluctuate();
+  no_fluct_profile.fluctuate(Nucleon{});
   CHECK( no_fluct_profile.thickness(0) == Approx(1/(2*M_PI*wsq)) );
 
   // nucleon width too small
@@ -121,6 +123,7 @@ TEST_CASE( "nucleon" ) {
       {"fluctuation",   1.},
       {"cross-section", 5.},
       {"nucleon-width", .1},
+      {"alpha",         .3},
   });
   CHECK_THROWS_AS( NucleonProfile bad_profile{bad_var_map}, std::domain_error );
 }

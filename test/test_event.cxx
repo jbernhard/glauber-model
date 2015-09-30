@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -10,15 +10,12 @@
 #include "../src/nucleus.h"
 #include "../src/random.h"
 
-using namespace trento;
+using namespace glauber;
 
 TEST_CASE( "event" ) {
   // Check Event class results against equivalent (but slower) methods.
 
-  // Repeat for p == 0, p < 0, p > 0.
-  auto pplus = .5 + .49*random::canonical<>();
-  auto pminus = -.5 + .49*random::canonical<>();
-  for (auto p : {0., pplus, pminus }) {
+  for (auto alpha : {0., .2 + .1*random::canonical<>()}) {
     // Random physical params.
     auto norm = 1. + .5*random::canonical<>();
     auto xsec = 4. + 3.*random::canonical<>();
@@ -34,7 +31,7 @@ TEST_CASE( "event" ) {
 
     auto var_map = make_var_map({
         {"normalization", norm},
-        {"reduced-thickness", p},
+        {"alpha", alpha},
         {"grid-max", grid_max},
         {"grid-step", grid_step},
         {"fluctuation",   fluct},
@@ -82,6 +79,7 @@ TEST_CASE( "event" ) {
       auto t = 0.;
       for (const auto& n : nucleus) {
         if (n.is_participant()) {
+          profile.fluctuate(n);
           auto dx = n.x() - x;
           auto dy = n.y() - y;
           t += profile.thickness(dx*dx + dy*dy);
@@ -90,22 +88,13 @@ TEST_CASE( "event" ) {
       return t;
     };
 
-    auto gen_mean = [p](double a, double b) {
-      if (std::abs(p) < 1e-12)
-        return std::sqrt(a*b);
-      else if (p < 0. && (a < 1e-12 || b < 1e-12))
-        return 0.;
-      else
-        return std::pow(.5*(std::pow(a, p) + std::pow(b, p)), 1./p);
-    };
-
     for (auto iy = 0; iy < grid_nsteps; ++iy) {
       for (auto ix = 0; ix < grid_nsteps; ++ix) {
         auto x = (ix + .5) * 2 * grid_max/grid_nsteps - grid_max;
         auto y = (iy + .5) * 2 * grid_max/grid_nsteps - grid_max;
         auto TA = thickness(*nucleusA, x, y);
         auto TB = thickness(*nucleusB, x, y);
-        TR[iy][ix] = norm * gen_mean(TA, TB);
+        TR[iy][ix] = norm * (TA + TB);
       }
     }
 
@@ -163,7 +152,6 @@ TEST_CASE( "event" ) {
   // test grid size when step size does not evenly divide width
   auto var_map = make_var_map({
       {"normalization", 1.},
-      {"reduced-thickness", 0.},
       {"grid-max", 10.},
       {"grid-step", 0.3}
   });

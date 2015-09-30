@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -25,10 +25,10 @@ namespace math = boost::math;
 
 using VarMap = po::variables_map;
 
-namespace trento {
+namespace glauber {
 
 class Nucleus;
 
-}  // namespace trento
+}  // namespace glauber
 
 #endif  // FWD_DECL_H

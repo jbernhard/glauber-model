@@ -1,12 +1,12 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
 #include "random.h"
 
-namespace trento { namespace random {
+namespace glauber { namespace random {
 
 // Seed random number generator from hardware device.
 Engine engine{std::random_device{}()};
 
-}}  // namespace trento::random
+}}  // namespace glauber::random

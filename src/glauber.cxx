@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -16,49 +16,12 @@
 
 // CMake sets this definition.
 // Fall back to a sane default.
-#ifndef TRENTO_VERSION_STRING
-#define TRENTO_VERSION_STRING "dev"
+#ifndef GLAUBER_VERSION_STRING
+#define GLAUBER_VERSION_STRING "dev"
 #endif
 
-namespace trento {
-
-namespace {
-
-void print_version() {
-  std::cout << "trento " << TRENTO_VERSION_STRING << '\n';
-}
-
-void print_bibtex() {
-  std::cout <<
-    "@article{Moreland:2014oya,\n"
-    "      author         = \"Moreland, J. Scott and Bernhard, Jonah E. and Bass,\n"
-    "                        Steffen A.\",\n"
-    "      title          = \"{Alternative ansatz to wounded nucleon and binary\n"
-    "                        collision scaling in high-energy nuclear collisions}\",\n"
-    "      journal        = \"Phys.Rev.\",\n"
-    "      number         = \"1\",\n"
-    "      volume         = \"C92\",\n"
-    "      pages          = \"011901\",\n"
-    "      doi            = \"10.1103/PhysRevC.92.011901\",\n"
-    "      year           = \"2015\",\n"
-    "      eprint         = \"1412.4708\",\n"
-    "      archivePrefix  = \"arXiv\",\n"
-    "      primaryClass   = \"nucl-th\",\n"
-    "      SLACcitation   = \"%%CITATION = ARXIV:1412.4708;%%\",\n"
-    "}\n";
-}
-
-// TODO
-// void print_default_config() {
-//   std::cout << "to do\n";
-// }
-
-}  // unnamed namespace
-
-}  // namespace trento
-
 int main(int argc, char* argv[]) {
-  using namespace trento;
+  using namespace glauber;
 
   // Parse options with boost::program_options.
   // There are quite a few options, so let's separate them into logical groups.
@@ -88,8 +51,6 @@ int main(int argc, char* argv[]) {
   general_opts.add_options()
     ("help,h", "show this help message and exit")
     ("version", "print version information and exit")
-    ("bibtex", "print bibtex entry and exit")
-    // ("default-config", "print a config file with default settings and exit")
     ("config-file,c", po::value<VecPath>()->value_name("FILE"),
      "configuration file\n(can be passed multiple times)");
 
@@ -102,9 +63,9 @@ int main(int argc, char* argv[]) {
 
   OptDesc phys_opts{"physical options"};
   phys_opts.add_options()
-    ("reduced-thickness,p",
+    ("alpha,a",
      po::value<double>()->value_name("FLOAT")->default_value(0., "0"),
-     "reduced thickness parameter")
+     "binary collision fraction")
     ("fluctuation,k",
      po::value<double>()->value_name("FLOAT")->default_value(1., "1"),
      "gamma fluctuation shape parameter")
@@ -156,7 +117,7 @@ int main(int argc, char* argv[]) {
 
   // Will be used several times.
   const std::string usage_str{
-    "usage: trento [options] projectile projectile [number-events = 1]\n"};
+    "usage: glauber [options] projectile projectile [number-events = 1]\n"};
 
   try {
     // Initialize a VarMap (boost::program_options::variables_map).
@@ -180,17 +141,9 @@ int main(int argc, char* argv[]) {
       return 0;
     }
     if (var_map.count("version")) {
-      print_version();
+      std::cout << "glauber " << GLAUBER_VERSION_STRING << '\n';
       return 0;
     }
-    if (var_map.count("bibtex")) {
-      print_bibtex();
-      return 0;
-    }
-    // if (var_map.count("default-config")) {
-    //   print_default_config();
-    //   return 0;
-    // }
 
     // Merge any config files.
     if (var_map.count("config-file")) {
@@ -223,7 +176,7 @@ int main(int argc, char* argv[]) {
   catch (const po::required_option&) {
     // Handle this exception separately from others.
     // This occurs e.g. when the program is excuted with no arguments.
-    std::cerr << usage_str << "run 'trento --help' for more information\n";
+    std::cerr << usage_str << "run 'glauber --help' for more information\n";
     return 1;
   }
   catch (const std::exception& e) {

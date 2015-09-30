@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace trento {
+namespace glauber {
 
 /// \rst
 /// Fast exponential approximation, to be used as a drop-in replacement for
@@ -73,6 +73,6 @@ inline T FastExp<T>::operator()(T x) const {
   return table_[index] * (1. + x - xmin_ - index*dx_);
 }
 
-}  // namespace trento
+}  // namespace glauber
 
 #endif  // FAST_EXP_H

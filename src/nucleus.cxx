@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -14,7 +14,7 @@
 
 #include "random.h"
 
-namespace trento {
+namespace glauber {
 
 NucleusPtr Nucleus::create(const std::string& species) {
   // W-S params ref. in header
@@ -237,4 +237,4 @@ void DeformedWoodsSaxonNucleus::sample_nucleons_impl() {
   }
 }
 
-}  // namespace trento
+}  // namespace glauber

@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -16,7 +16,7 @@
 
 #include "fwd_decl.h"
 
-namespace trento {
+namespace glauber {
 
 namespace {
 
@@ -107,9 +107,10 @@ NucleonProfile::NucleonProfile(const VarMap& var_map)
       max_impact_sqr_(sqr(max_impact_widths)*width_sqr_),
       neg_one_div_two_width_sqr_(-.5/width_sqr_),
       cross_sec_param_(compute_cross_sec_param(var_map)),
+      alpha_(var_map["alpha"].as<double>()),
       fast_exp_(-.5*sqr(trunc_radius_widths), 0., 1000),
       fluct_dist_(gamma_param_unit_mean(var_map["fluctuation"].as<double>())),
       prefactor_(math::double_constants::one_div_two_pi/width_sqr_)
 {}
 
-}  // namespace trento
+}  // namespace glauber

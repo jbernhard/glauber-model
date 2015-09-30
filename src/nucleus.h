@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -13,7 +13,7 @@
 #include "fwd_decl.h"
 #include "nucleon.h"
 
-namespace trento {
+namespace glauber {
 
 // Alias for a smart pointer to a Nucleus.
 using NucleusPtr = std::unique_ptr<Nucleus>;
@@ -234,6 +234,6 @@ class DeformedWoodsSaxonNucleus : public Nucleus {
   const double rmax_;
 };
 
-}  // namespace trento
+}  // namespace glauber
 
 #endif  // NUCLEUS_H

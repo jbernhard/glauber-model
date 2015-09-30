@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(trento CXX)
+project(glauber CXX)
 
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-std=c++11" CXX11)
@@ -27,12 +27,12 @@ else()
   # Also link to zlib for HDF5 compression.
   set(HDF5_LIBRARIES ${HDF5_CXX_LIB} ${HDF5_C_LIB} z)
   # Set preprocessor definition so HDF5 output is compiled.
-  add_definitions(-DTRENTO_HDF5)
+  add_definitions(-DGLAUBER_HDF5)
 endif()
 
 set(PROJECT_VERSION_MAJOR 1)
-set(PROJECT_VERSION_MINOR 1)
-set(PROJECT_VERSION_PATCH 1)
+set(PROJECT_VERSION_MINOR 0)
+set(PROJECT_VERSION_PATCH 0)
 set(PROJECT_VERSION
   "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
@@ -95,4 +95,3 @@ set(LIBRARY_NAME "lib${PROJECT_NAME}")
 
 add_subdirectory(src)
 add_subdirectory(test)
-add_subdirectory(doc)

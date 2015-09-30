@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -11,7 +11,7 @@
 
 #include "../src/nucleus.h"
 
-using namespace trento;
+using namespace glauber;
 
 TEST_CASE( "collider" ) {
   constexpr auto N = 5;
@@ -24,7 +24,7 @@ TEST_CASE( "collider" ) {
     {"b-min", 0.},
     {"b-max", -1.},
     {"normalization", 1.},
-    {"reduced-thickness", 0.},
+    {"alpha", .1},
     {"grid-max", 9.},
     {"grid-step", 0.3},
     {"fluctuation", 1.},
@@ -85,7 +85,7 @@ TEST_CASE( "fixed impact parameter" ) {
     {"b-min", bfixed},
     {"b-max", bfixed},
     {"normalization", 1.},
-    {"reduced-thickness", 0.},
+    {"alpha", 0.},
     {"grid-max", 9.},
     {"grid-step", 0.3},
     {"fluctuation", 1.},
@@ -128,7 +128,7 @@ TEST_CASE( "random seed" ) {
         {"b-min", 0.},
         {"b-max", -1.},
         {"normalization", 1.},
-        {"reduced-thickness", 0.},
+        {"alpha", .2},
         {"grid-max", 9.},
         {"grid-step", 0.3},
         {"fluctuation", 1.},

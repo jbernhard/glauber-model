@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -10,19 +10,19 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-#ifdef TRENTO_HDF5
+#ifdef GLAUBER_HDF5
 #include <H5Cpp.h>
 #endif
 
 #include "../src/event.h"
 #include "../src/nucleus.h"
 
-using namespace trento;
+using namespace glauber;
 
 TEST_CASE( "output" ) {
   auto var_map = make_var_map({
     {"normalization", 1.},
-    {"reduced-thickness", 0.},
+    {"alpha", 0.},
     {"grid-max", 9.},
     {"grid-step", 0.3},
     {"fluctuation", 1.},
@@ -185,7 +185,7 @@ TEST_CASE( "output" ) {
     fs::remove(temp_path);
   }
 
-#ifdef TRENTO_HDF5
+#ifdef GLAUBER_HDF5
   SECTION( "hdf5 only" ) {
     auto nev = 10;
 
@@ -255,5 +255,5 @@ TEST_CASE( "output" ) {
     // clear temporary file
     fs::remove(temp_path);
   }
-#endif  // TRENTO_HDF5
+#endif  // GLAUBER_HDF5
 }

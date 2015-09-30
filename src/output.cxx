@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -16,11 +16,11 @@
 #include "event.h"
 
 // Compile HDF5 output if available.
-#ifdef TRENTO_HDF5
+#ifdef GLAUBER_HDF5
 
 #include "H5Cpp.h"
 
-namespace trento {
+namespace glauber {
 
 namespace {
 
@@ -99,11 +99,11 @@ void HDF5Writer::operator()(
 
 }  // unnamed namespace
 
-}  // namespace trento
+}  // namespace glauber
 
-#endif  // TRENTO_HDF5
+#endif  // GLAUBER_HDF5
 
-namespace trento {
+namespace glauber {
 
 namespace {
 
@@ -197,14 +197,14 @@ Output::Output(const VarMap& var_map) {
   if (var_map.count("output")) {
     const auto& output_path = var_map["output"].as<fs::path>();
     if (is_hdf5(output_path)) {
-#ifdef TRENTO_HDF5
+#ifdef GLAUBER_HDF5
       if (fs::exists(output_path))
         throw std::runtime_error{"file '" + output_path.string() +
                                  "' exists, will not overwrite"};
       writers_.emplace_back(HDF5Writer{output_path});
 #else
       throw std::runtime_error{"HDF5 output was not compiled"};
-#endif  // TRENTO_HDF5
+#endif  // GLAUBER_HDF5
     } else {
       // Text files are all written into a single directory.  Require the
       // directory to be initially empty to avoid accidental overwriting and/or
@@ -227,4 +227,4 @@ Output::Output(const VarMap& var_map) {
   }
 }
 
-}  // namespace trento
+}  // namespace glauber

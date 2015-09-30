@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -13,7 +13,7 @@
 #include "fwd_decl.h"
 #include "nucleus.h"
 
-namespace trento {
+namespace glauber {
 
 namespace {
 
@@ -116,4 +116,4 @@ double Collider::sample_impact_param() {
   return b;
 }
 
-}  // namespace trento
+}  // namespace glauber

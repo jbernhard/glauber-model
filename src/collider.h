@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -12,13 +12,12 @@
 #include "nucleon.h"
 #include "output.h"
 
-namespace trento {
+namespace glauber {
 
 /// \rst
 /// Orchestrates event generation and output.  Owns instances of several other
-/// TRENTO classes and knows how they work together.  Responsible for sampling
-/// impact parameters.  After instantiation, call ``run_events()`` to do
-/// everything.
+/// classes and knows how they work together.  Responsible for sampling impact
+/// parameters.  After instantiation, call ``run_events()`` to do everything.
 ///
 /// Example::
 ///
@@ -85,6 +84,6 @@ class Collider {
   Output output_;
 };
 
-}  // namespace trento
+}  // namespace glauber
 
 #endif  // COLLIDER_H

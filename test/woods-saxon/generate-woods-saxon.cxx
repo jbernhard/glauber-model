@@ -3,7 +3,7 @@
 #include <random>
 #include <string>
 
-// Generate Woods-Saxon numbers using the same method as in actual trento code.
+// Generate Woods-Saxon numbers using the same method as in the actual model code.
 
 int main(int /* argc */, char* argv[]) {
   double R;

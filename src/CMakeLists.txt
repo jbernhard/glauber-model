@@ -13,7 +13,7 @@ set_target_properties(${LIBRARY_NAME} PROPERTIES PREFIX "")
 # Compile the actual executable.
 set(MAIN ${PROJECT_NAME}.cxx)
 set_source_files_properties(${MAIN} PROPERTIES
-  COMPILE_DEFINITIONS "TRENTO_VERSION_STRING=\"${PROJECT_VERSION}\"")
+  COMPILE_DEFINITIONS "GLAUBER_VERSION_STRING=\"${PROJECT_VERSION}\"")
 add_executable(${PROJECT_NAME} ${MAIN})
 target_link_libraries(${PROJECT_NAME} ${LIBRARY_NAME} ${Boost_LIBRARIES} ${HDF5_LIBRARIES})
 

@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -11,7 +11,7 @@
 #include "fwd_decl.h"
 #include "random.h"
 
-namespace trento {
+namespace glauber {
 
 class Nucleon;
 
@@ -33,7 +33,7 @@ class NucleonProfile {
 
   /// Randomly fluctuate the profile.  Should be called prior to evaluating the
   /// thickness function for a new nucleon.
-  void fluctuate();
+  void fluctuate(const Nucleon& nucleon);
 
   /// Compute the thickness function at a (squared) distance from the profile
   /// center.
@@ -59,6 +59,9 @@ class NucleonProfile {
   /// Dimensionless parameter set to reproduce the inelastic nucleon-nucleon
   /// cross section \sigma_{NN}.  Calculated in constructor.
   const double cross_sec_param_;
+
+  /// Binary collision fraction.
+  const double alpha_;
 
   /// Fast exponential for calculating the thickness profile.
   const FastExp<double> fast_exp_;
@@ -87,6 +90,9 @@ class Nucleon {
   /// The transverse \em y position.
   double y() const;
 
+  /// Number of times this nucleon has collided.
+  int ncoll() const;
+
   /// Whether or not this nucleon is a participant.
   bool is_participant() const;
 
@@ -107,8 +113,8 @@ class Nucleon {
   /// Internal storage of the transverse position.
   double x_, y_;
 
-  /// Internal storage of participant status.
-  bool participant_;
+  /// Internal storage of number of collisions.
+  int ncoll_;
 };
 
 // These functions are short, called very often, and account for a large
@@ -124,18 +130,22 @@ inline double Nucleon::y() const {
   return y_;
 }
 
+inline int Nucleon::ncoll() const {
+  return ncoll_;
+}
+
 inline bool Nucleon::is_participant() const {
-  return participant_;
+  return ncoll_ > 0;
 }
 
 inline void Nucleon::set_position(double x, double y) {
   x_ = x;
   y_ = y;
-  participant_ = false;
+  ncoll_ = 0;
 }
 
 inline void Nucleon::set_participant() {
-  participant_ = true;
+  ++ncoll_;
 }
 
 // NucleonProfile inline member functions
@@ -148,9 +158,10 @@ inline double NucleonProfile::max_impact() const {
   return std::sqrt(max_impact_sqr_);
 }
 
-inline void NucleonProfile::fluctuate() {
+inline void NucleonProfile::fluctuate(const Nucleon& nucleon) {
   prefactor_ = fluct_dist_(random::engine) *
-     math::double_constants::one_div_two_pi / width_sqr_;
+     math::double_constants::one_div_two_pi / width_sqr_ *
+     (1 + alpha_*(nucleon.ncoll() - 1));
 }
 
 inline double NucleonProfile::thickness(double distance_sqr) const {
@@ -160,15 +171,11 @@ inline double NucleonProfile::thickness(double distance_sqr) const {
 }
 
 inline bool NucleonProfile::participate(Nucleon& A, Nucleon& B) const {
-  // If both nucleons are already participants, there's nothing to do.
-  if (A.is_participant() && B.is_participant())
-    return true;
-
+  // Check if nucleons are out of range.
   double dx = A.x() - B.x();
   double dy = A.y() - B.y();
   double distance_sqr = dx*dx + dy*dy;
 
-  // Check if nucleons are out of range.
   if (distance_sqr > max_impact_sqr_)
     return false;
 
@@ -195,6 +202,6 @@ inline bool NucleonProfile::participate(Nucleon& A, Nucleon& B) const {
   return false;
 }
 
-}  // namespace trento
+}  // namespace glauber
 
 #endif  // NUCLEON_H

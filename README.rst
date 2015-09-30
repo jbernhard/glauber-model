@@ -1,12 +1,8 @@
-T\ :sub:`R`\ ENTo
-=================
-*Reduced Thickness Event-by-event Nuclear Topology*
+Glauber model
+=============
 
-.. image:: http://img.shields.io/travis/Duke-QCD/trento.svg?style=flat-square
-  :target: https://travis-ci.org/Duke-QCD/trento
-
-T\ :sub:`R`\ ENTo is a simple, fast model for the initial conditions of high-energy nuclear collisions (pp, pA, AA).
-`PRC 92 011901 <http://journals.aps.org/prc/abstract/10.1103/PhysRevC.92.011901>`_ / `arXiv:1412.4708 [nucl-th] <http://inspirehep.net/record/1334386>`_ formally presents the model and preliminary results.
+This is a Monte Carlo Glauber initial condition model forked from the `trento code <https://github.com/Duke-QCD/trento>`_.
+The interface is identical to ``trento`` except for replacing the ``--reduced-thickness`` option with ``--alpha``.
 
 Installation
 ------------
@@ -32,33 +28,32 @@ Arch::
 
    pacman -S cmake gcc boost boost-libs hdf5-cpp-fortran
 
-After installing the dependencies, download the `latest release <https://github.com/Duke-QCD/trento/releases/latest>`_ or clone the repository, then compile and install T\ :sub:`R`\ ENTo through the standard CMake sequence::
+After installing the dependencies, clone the repository then compile and install through the standard CMake sequence::
 
    mkdir build && cd build
    cmake ..
    make install
 
-This will install the compiled binary to ``~/.local/bin/trento``.
-If you do not want this to happen, run ``make`` instead of ``make install`` and the binary will be left at ``build/src/trento``.
-The remainder of this document assumes ``trento`` is in your ``PATH``.
+This will install the compiled binary to ``~/.local/bin/glauber``.
+If you do not want this to happen, run ``make`` instead of ``make install`` and the binary will be left at ``build/src/glauber``.
+The remainder of this document assumes ``glauber`` is in your ``PATH``.
 
-The code is `continuously tested <https://travis-ci.org/Duke-QCD/trento>`_ on Ubuntu with GCC 4.9.
-It should run just as well on any Linux distribution or OS X, and probably on Windows.
+The code should run on any Linux distribution or OS X, and probably on Windows.
 For the compiler, Clang works as well as GCC.
 Other compilers should work but may require modifying the compiler flags.
 
 Usage
 -----
-T\ :sub:`R`\ ENTo has a standard command-line interface.
+The code has a standard command-line interface.
 The basic syntax is ::
 
-   trento [options] projectile projectile [number-events = 1]
+   glauber [options] projectile projectile [number-events = 1]
 
 where the only required arguments are the two projectile names.
-For example, ``trento Pb Pb 10`` would run ten lead-lead events.
+For example, ``glauber Pb Pb 10`` would run ten lead-lead events.
 
 The remaining optional arguments may be given in any order, before or after the projectiles.
-Run ``trento --help`` for a brief summary of the options and see below for more detailed descriptions and some `Examples`_.
+Run ``glauber --help`` for a brief summary of the options and see below for more detailed descriptions and some `Examples`_.
 
 Specifying projectiles
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -172,13 +167,9 @@ They are simply round numbers.
 It is entirely expected that the ideal parameters will change depending on the beam energy.
 In particular, **the cross section must be explicitly set for each beam energy**.
 
--p, --reduced-thickness FLOAT
-   Reduced thickness parameter *p*.
-   The reduced thickness is defined as the `generalized mean <https://en.wikipedia.org/wiki/Generalized_mean>`_ of participant nuclear thickness
-
-   .. image:: http://latex2png.com/output//latex_11011000a8160e4838e75a0c11f293b2.png
-
-   The default is *p* = 0, which corresponds to the geometric mean.
+-a, --alpha FLOAT
+   Binary collision fraction.
+   The default is 0.
 
 -k, --fluctuation FLOAT
    `Gamma distribution <https://en.wikipedia.org/wiki/Gamma_distribution>`_ shape parameter *k* for nucleon fluctuations.
@@ -294,8 +285,8 @@ For example, one could have a file ``common.conf`` containing settings for all c
 
 To be used like so::
 
-   trento -c common.conf -c PbPb.conf
-   trento -c common.conf -c pp.conf
+   glauber -c common.conf -c PbPb.conf
+   glauber -c common.conf -c pp.conf
 
 If an option is specified in a config file and on the command line, the command line overrides.
 
@@ -303,28 +294,28 @@ Examples
 --------
 Run a thousand lead-lead events using default settings and save the event data to file::
 
-   trento Pb Pb 1000 > PbPb.dat
+   glauber Pb Pb 1000 > PbPb.dat
 
 Run proton-lead events with a larger cross section (for the higher beam energy) and also compress the output::
 
-   trento p Pb 1000 --cross-section 7.1 | gzip > pPb.dat.gz
+   glauber p Pb 1000 --cross-section 7.1 | gzip > pPb.dat.gz
 
 Suppress printing to stdout and save events to HDF5::
 
-   trento p Pb 1000 --cross-section 7.1 --quiet --output events.hdf
+   glauber p Pb 1000 --cross-section 7.1 --quiet --output events.hdf
 
 Uranium-uranium events at RHIC (smaller cross section) using short options::
 
-   trento U U 1000 -x 4.2
+   glauber U U 1000 -x 4.2
 
 Deformed gold-gold with an explicit nucleon width::
 
-   trento Au2 Au2 1000 -x 4.2 -w 0.6
+   glauber Au2 Au2 1000 -x 4.2 -w 0.6
 
 Simple sorting and selection (e.g. by centrality) can be achieved by combining standard Unix tools.
 For example, this sorts by centrality (multiplicity) and selects the top 10%::
 
-   trento Pb Pb 1000 | sort -rgk 4 | head -n 100
+   glauber Pb Pb 1000 | sort -rgk 4 | head -n 100
 
 Loading data into Python
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -338,7 +329,7 @@ Here's a nice trick to avoid the temporary file:
    import subprocess
    import numpy as np
 
-   proc = subprocess.Popen('trento Pb Pb 1000'.split(), stdout=subprocess.PIPE)
+   proc = subprocess.Popen('glauber Pb Pb 1000'.split(), stdout=subprocess.PIPE)
    data = np.array([l.split() for l in proc.stdout], dtype=float)
    proc.stdout.close()
 
@@ -386,27 +377,3 @@ Simple example:
 
       # sort by centrality
       sorted_events = sorted(f.values(), key=lambda x: x.attrs['mult'], reverse=True)
-
-Attribution
------------
-If you make use of this software in your research, please `cite it <http://inspirehep.net/record/1334386>`_.
-The BibTeX entry is::
-
-   @article{Moreland:2014oya,
-         author         = "Moreland, J. Scott and Bernhard, Jonah E. and Bass,
-                           Steffen A.",
-         title          = "{Alternative ansatz to wounded nucleon and binary
-                           collision scaling in high-energy nuclear collisions}",
-         journal        = "Phys.Rev.",
-         number         = "1",
-         volume         = "C92",
-         pages          = "011901",
-         doi            = "10.1103/PhysRevC.92.011901",
-         year           = "2015",
-         eprint         = "1412.4708",
-         archivePrefix  = "arXiv",
-         primaryClass   = "nucl-th",
-         SLACcitation   = "%%CITATION = ARXIV:1412.4708;%%",
-   }
-
-Running ``trento --bibtex`` will also print this entry.

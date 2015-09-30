@@ -1,11 +1,10 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
 #ifndef EVENT_H
 #define EVENT_H
 
-#include <functional>
 #include <map>
 
 #ifdef NDEBUG
@@ -15,7 +14,7 @@
 
 #include "fwd_decl.h"
 
-namespace trento {
+namespace glauber {
 
 class NucleonProfile;
 
@@ -89,16 +88,7 @@ class Event {
       const Nucleus& nucleus, NucleonProfile& profile, Grid& TX);
 
   /// Compute the reduced thickness function (TR) after computing TA and TB.
-  /// Template parameter GenMean sets the actual function that returns TR(TA, TB).
-  /// It is determined at runtime based on the configuration.
-  template <typename GenMean>
-  void compute_reduced_thickness(GenMean gen_mean);
-
-  /// An instantation of compute_reduced_thickness<GenMean> with a bound
-  /// argument for GenMean.  Created in the ctor.  Implemented this way to
-  /// allow the compiler to fully inline the GenMean function and only require a
-  /// single "virtual" function call per event.
-  std::function<void()> compute_reduced_thickness_;
+  void compute_reduced_thickness();
 
   /// Compute observables that require a second pass over the reduced thickness grid.
   void compute_observables();
@@ -131,6 +121,6 @@ class Event {
   std::map<int, double> eccentricity_;
 };
 
-}  // namespace trento
+}  // namespace glauber
 
 #endif  // EVENT_H

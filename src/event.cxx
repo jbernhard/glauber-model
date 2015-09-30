@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -11,30 +11,11 @@
 
 #include "nucleus.h"
 
-namespace trento {
+namespace glauber {
 
 namespace {
 
 constexpr double TINY = 1e-12;
-
-// Generalized mean for p > 0.
-// M_p(a, b) = (1/2*(a^p + b^p))^(1/p)
-inline double positive_pmean(double p, double a, double b) {
-  return std::pow(.5*(std::pow(a, p) + std::pow(b, p)), 1./p);
-}
-
-// Generalized mean for p < 0.
-// Same as the positive version, except prevents division by zero.
-inline double negative_pmean(double p, double a, double b) {
-  if (a < TINY || b < TINY)
-    return 0.;
-  return positive_pmean(p, a, b);
-}
-
-// Generalized mean for p == 0.
-inline double geometric_mean(double a, double b) {
-  return std::sqrt(a*b);
-}
 
 }  // unnamed namespace
 
@@ -53,26 +34,6 @@ Event::Event(const VarMap& var_map)
       TA_(boost::extents[nsteps_][nsteps_]),
       TB_(boost::extents[nsteps_][nsteps_]),
       TR_(boost::extents[nsteps_][nsteps_]) {
-  // Choose which version of the generalized mean to use based on the
-  // configuration.  The possibilities are defined above.  See the header for
-  // more information.
-  auto p = var_map["reduced-thickness"].as<double>();
-
-  if (std::fabs(p) < TINY) {
-    compute_reduced_thickness_ = [this]() {
-      compute_reduced_thickness(geometric_mean);
-    };
-  } else if (p > 0.) {
-    compute_reduced_thickness_ = [this, p]() {
-      compute_reduced_thickness(
-        [p](double a, double b) { return positive_pmean(p, a, b); });
-    };
-  } else {
-    compute_reduced_thickness_ = [this, p]() {
-      compute_reduced_thickness(
-        [p](double a, double b) { return negative_pmean(p, a, b); });
-    };
-  }
 }
 
 void Event::compute(const Nucleus& nucleusA, const Nucleus& nucleusB,
@@ -81,7 +42,7 @@ void Event::compute(const Nucleus& nucleusA, const Nucleus& nucleusB,
   npart_ = 0;
   compute_nuclear_thickness(nucleusA, profile, TA_);
   compute_nuclear_thickness(nucleusB, profile, TB_);
-  compute_reduced_thickness_();
+  compute_reduced_thickness();
   compute_observables();
 }
 
@@ -132,7 +93,7 @@ void Event::compute_nuclear_thickness(
     int iymax = clip(static_cast<int>((y+r)/dxy_), 0, nsteps_-1);
 
     // Prepare profile for new nucleon.
-    profile.fluctuate();
+    profile.fluctuate(nucleon);
 
     // Add profile to grid.
     for (auto iy = iymin; iy <= iymax; ++iy) {
@@ -145,15 +106,14 @@ void Event::compute_nuclear_thickness(
   }
 }
 
-template <typename GenMean>
-void Event::compute_reduced_thickness(GenMean gen_mean) {
+void Event::compute_reduced_thickness() {
   double sum = 0.;
   double ixcm = 0.;
   double iycm = 0.;
 
   for (int iy = 0; iy < nsteps_; ++iy) {
     for (int ix = 0; ix < nsteps_; ++ix) {
-      auto t = norm_ * gen_mean(TA_[iy][ix], TB_[iy][ix]);
+      auto t = norm_ * (TA_[iy][ix] + TB_[iy][ix]);
       TR_[iy][ix] = t;
       sum += t;
       // Center of mass grid indices.
@@ -254,4 +214,4 @@ void Event::compute_observables() {
   eccentricity_[5] = e5.finish();
 }
 
-}  // namespace trento
+}  // namespace glauber

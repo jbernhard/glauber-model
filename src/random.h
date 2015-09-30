@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -12,7 +12,7 @@
 
 #include "fwd_decl.h"
 
-namespace trento { namespace random {
+namespace glauber { namespace random {
 
 /// Mersenne Twister engine, 64-bit preset.
 using Engine = std::mt19937_64;
@@ -40,6 +40,6 @@ inline double phi() {
   return math::constants::two_pi<RealType>() * canonical<RealType>();
 }
 
-}}  // namespace trento::random
+}}  // namespace glauber::random
 
 #endif  // RANDOM_H

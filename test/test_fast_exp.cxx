@@ -1,4 +1,4 @@
-// TRENTO: Reduced Thickness Event-by-event Nuclear Topology
+// Glauber model
 // Copyright 2015 Jonah E. Bernhard, J. Scott Moreland
 // MIT License
 
@@ -8,7 +8,7 @@
 
 #include "../src/random.h"
 
-using namespace trento;
+using namespace glauber;
 
 TEST_CASE( "fast exponential" ) {
   double xmin = -3.2;
